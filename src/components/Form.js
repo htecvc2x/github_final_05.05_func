@@ -1,43 +1,34 @@
-import React, {Component} from "react";
+import React, {Component, useState} from "react";
 import PropTypes from "prop-types";
 
-export default class Form extends Component {
-    constructor(props) {
-        super(props);
+const Form = ({addItem}) => {
 
-        this.handleChange = this.handleChange.bind(this);
-        this.handleSubmit = this.handleSubmit.bind(this);
+    const [userName, setUserName] = useState("");
+
+    const handleChange = ({target}) => {
+        setUserName(target.value);
     }
 
-
-    state = {
-        userName: ""
-    }
-
-    handleChange({ target }) {
-        this.setState({ userName: target.value })
-    }
-
-    handleSubmit(e) {
+    const handleSubmit = (e) => {
         e.preventDefault();
-        this.props.addItem(this.state.userName)
-        this.setState({ userName: "" })
+        addItem(userName);
+        setUserName(userName);
     }
 
-    render() {
-        return (
-            <form onSubmit={this.handleSubmit}>
-                <div className="form-box">
-                    <div className="form-box__item">
-                        <input value={this.state.userName} onChange={this.handleChange} type="text" />
-                        <button type={'submit'}>Add user</button>
-                    </div>
+    return (
+        <form onSubmit={handleSubmit}>
+            <div className="form-box">
+                <div className="form-box__item">
+                    <input value={userName} onChange={handleChange} type="text" />
+                    <button type={'submit'}>Add user</button>
                 </div>
-            </form>
-        )
-    }
+            </div>
+        </form>
+    )
 }
 
 Form.propTypes = {
     addItem: PropTypes.func.isRequired
 }
+
+export default Form;

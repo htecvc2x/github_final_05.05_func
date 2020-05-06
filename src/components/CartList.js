@@ -3,15 +3,13 @@ import Cart from "./Cart";
 import PropTypes from 'prop-types';
 
 
-export default class CartList extends Component {
+const CartList = (props) => {
 
-    render() {
-        return (
-            <div className="cart-box">
-                { this.props.items.map(item => <Cart key={item.id} item={item}/>) }
-            </div>
-        )
-    }
+    return (
+        <div className="cart-box">
+            { props.items.map(item => <Cart key={item.id} item={item}/>) }
+        </div>
+    )
 }
 
 CartList.propTypes = {
@@ -21,3 +19,5 @@ CartList.propTypes = {
 CartList.defaultProps = {
     items: []
 }
+
+export default CartList;
