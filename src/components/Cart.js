@@ -3,18 +3,18 @@ import PropTypes from 'prop-types';
 import {AppContext} from "./../App";
 
 
-function Cart(props) {
+function Cart({item}) {
 
     const value = useContext(AppContext);
 
     return (
         <div className="cart">
-            <h3>{props.item.name}</h3>
-            <p>{props.item.login}</p>
-            <img src={props.item.avatar_url} alt="avatar img" />
+            <h3>{item.name}</h3>
+            <p>{item.login}</p>
+            <img src={item.avatar_url} alt="avatar img" />
             <button
                 className="delete-button"
-                onClick={() => value.deleteItem(props.item.id)}
+                onClick={() => value.deleteItem(item.id)}
             >Delete user</button>
         </div>
     )
