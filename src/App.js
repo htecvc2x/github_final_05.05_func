@@ -1,85 +1,83 @@
-import React, {Component, createContext} from 'react';
+import React, {Component, createContext, useState} from 'react';
 import './App.css';
 import CartList from "./components/CartList";
 import Form from "./components/Form";
 import Spinner from "./components/Spinner";
 
-// import items from "./data";
+import i from "./data";
 
 export const AppContext = createContext();
 
-export default class App extends Component {
+const App = () => {
 
-    constructor() {
-        super();
-        this.addItem = this.addItem.bind(this);
-        this.deleteItem = this.deleteItem.bind(this);
-    }
+    const [error, setError] = useState('');
+    const [loading, setLoading] = useState(false);
+    const [items, setItems] = useState(i);
 
-    state = {
-        error: "",
-        loading: false,
-        items: []
-    }
-
-    async addItem(userName) {
+    async function addItem(userName) {
         try {
-            this.setState({ error: "", loading: true });
+            setError('');
+            setLoading(true);
             const url = `https://api.github.com/users/${userName}`
             const res = await fetch(url);
 
             if(!res.ok) {
-                this.setState({ error: "Unsuccessfully response" });
+                setError('Unsuccessfully response');
                 throw Error("Bad response");
             }
 
-            const item = await res.json();
-            this.setState(({ items }) => {
-                if (
-                    item.login !== userName ||
-                    items.find(v => v.login === item.login)
-                ) {
-                    return null;
-                }
+            let item = await res.json();
 
-                return {
-                    items: [item, ...items]
-                }
-            })
+            if (
+                item.login == userName && 
+                items.find(v => v.login === item.login)
+            ) {
+            } else {
+                setItems([item, ...items]);
+            }
+
+
+            //setItems((items) => {
+                //if (
+                    //item.login !== userName ||
+                    //items.find(v => v.login === item.login)
+                //) {
+                    //return null;
+                //}
+
+                //return {
+                    //items: [item, ...items]
+                //}
+            //})
         } catch (e) {
-            this.setState({ error: e.message });
+            setError(e.message);
             setTimeout(
-                () => this.setState({ error: "" }),
+                () => setError(''),
                 3000
             )
             console.log(e);
         } finally {
-            this.setState({ loading: false })
+            setLoading(false);
         }
     }
 
-    deleteItem(id) {
-        // if (!window.confirm("Are you sure to delete item ? ")) {
-        //     return false;
-        // }
-        this.setState(({ items }) => ({
-            items: items.filter(item => item.id !== id)
-        }));
+    const deleteItem = (id) => {
+        setItems(items.filter(item => item.id !== id));
     };
 
-    render() {
-        return (
-            <AppContext.Provider value={{
-                deleteItem: this.deleteItem
-            }}>
-                <div className="container">
-                    <Spinner loading={this.state.loading} />
-                    <Form addItem={this.addItem} />
-                    {this.state.loading && <h1>Loading ... </h1>}
-                    {this.state.error && <h1>{this.state.error}</h1>}
-                    <CartList items={this.state.items}/>
-                </div>
-            </AppContext.Provider>
-        );
-    }
+    return (
+        <AppContext.Provider value={{
+            deleteItem: deleteItem
+        }}>
+            <div className="container">
+                <Spinner loading={loading} />
+                <Form addItem={addItem} />
+                {loading && <h1>Loading ... </h1>}
+                {error && <h1>{error}</h1>}
+                <CartList items={items}/>
+            </div>
+        </AppContext.Provider>
+    );
 }
+
+export default App;
